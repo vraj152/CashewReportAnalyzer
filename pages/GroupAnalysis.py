@@ -39,13 +39,9 @@ def load_data():
         # Try to get data from session state
         return st.session_state['data']
     except KeyError:
-        # If not in session state, load sample data
-        df = pd.read_csv("data/CashewReport_CashewData.csv")
-        df['date'] = pd.to_datetime(df['date'])
-        df['amount'] = df['amount'].astype(float)
-        df['transaction_type'] = df['income'].map({True: 'Income', False: 'Expense'})
-        df['hashtags'] = df['note'].apply(extract_hashtags)
-        return df
+        st.error("No data found. Please upload your CSV file to proceed.")
+        st.info("Navigate to Home page to get started.")
+        st.stop()
 
 # Load data
 df = load_data()
