@@ -1,36 +1,22 @@
 # Personal Expense Analyzer
 
-A simple web application to analyze and visualize personal expenses from CSV files.
+A simple web application to help you analyze the expense reports generated from the Cashew
+mobile/ Desktop application.
 
 ## Features
 
 - Upload and analyze expense data from CSV files
 - Interactive visualizations of spending patterns
-- Category-wise expense breakdown
-- Monthly expense trends
-- Summary metrics
-
-## Installation
-
-1. Clone this repository
-2. Install requirements:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Run the application:
-   ```bash
-   streamlit run app.py
-   ```
+- Trip/ Group analysis:
+  - Analyze your expenses for a given trip/ group of expenses.
+  - NOTE: Requires you to add `# <trip_name>` text in your note.
+- Monthly income/ expense trends
+  - Category and sub-category breakdown
 
 ## CSV Format
 
-Your CSV file should have the following columns:
-- date: Date of expense (YYYY-MM-DD format)
-- category: Expense category
-- description: Description of the expense
-- amount: Amount spent
+This application requires you to use the CSV format generated from -> https://github.com/jameskokoska/Cashew
 
-## Sample Data
+## Sample data
 
-A sample dataset is included in the `data` directory for testing purposes. 
+TODO(vraj152) -- Add a sample CSV data here.
