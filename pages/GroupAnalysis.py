@@ -107,12 +107,14 @@ def analyze_groups(df):
                     })
             
             category_df = pd.DataFrame(category_data)
+            print(category_df)
             category_pivot = category_df.pivot_table(
                 values='Amount',
                 index='Category',
                 columns='Group',
                 aggfunc='sum'
             ).fillna(0)
+            print(category_pivot)
             
             # Create the clickable chart
             fig_category = px.bar(category_pivot,
@@ -120,6 +122,7 @@ def analyze_groups(df):
                                 barmode='group',
                                 labels={'value': 'Amount ($)'},
                                 color_discrete_sequence=['indianred', 'royalblue', 'green', 'orange', 'purple'])  # Add more colors if needed
+            print(fig_category)
             
             # Customize layout for better readability
             fig_category.update_layout(
