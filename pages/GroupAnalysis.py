@@ -3,6 +3,9 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 from streamlit_plotly_events import plotly_events
+import logging
+from logging import getLogger
+import sys
 
 # Set page config
 st.set_page_config(
@@ -53,7 +56,7 @@ def analyze_groups(df):
     if all_hashtags:
         st.write(f"Found {len(all_hashtags)} groups in your data")
         selected_groups = st.multiselect('Select Groups to Compare', all_hashtags)
-        
+
         if selected_groups:
             # Create group summary
             group_data = []
@@ -98,7 +101,7 @@ def analyze_groups(df):
             for group in selected_groups:
                 group_expenses = df[df['hashtags'].apply(lambda x: group in x)]
                 group_expenses = group_expenses[group_expenses['transaction_type'] == 'Expense']
-                
+
                 for _, row in group_expenses.iterrows():
                     category_data.append({
                         'Category': row['category name'],
@@ -107,37 +110,54 @@ def analyze_groups(df):
                     })
             
             category_df = pd.DataFrame(category_data)
-            print(category_df)
             category_pivot = category_df.pivot_table(
                 values='Amount',
                 index='Category',
                 columns='Group',
                 aggfunc='sum'
             ).fillna(0)
-            print(category_pivot)
-            
-            # Create the clickable chart
-            fig_category = px.bar(category_pivot,
-                                title='Category-wise Expenses by Group',
-                                barmode='group',
-                                labels={'value': 'Amount ($)'},
-                                color_discrete_sequence=['indianred', 'royalblue', 'green', 'orange', 'purple'])  # Add more colors if needed
-            print(fig_category)
-            
+            category_pivot = category_pivot.reset_index()
+            melted_category = category_pivot.melt(
+                id_vars='Category',
+                var_name='Group',
+                value_name='Amount'
+            )
+            fig_category = px.bar(
+                melted_category,
+                x='Category',
+                y='Amount',
+                color='Group',
+                barmode='group',
+                title='Category-wise Expenses by Group',
+                labels={'Amount': 'Amount ($)'},
+                color_discrete_sequence=['indianred', 'royalblue', 'green', 'orange', 'purple']
+            )
+
             # Customize layout for better readability
             fig_category.update_layout(
                 showlegend=True,
                 legend_title_text='Groups',
                 bargap=0.2,  # Gap between bars in the same group
-                bargroupgap=0.1  # Gap between bar groups
+                bargroupgap=0.1,  # Gap between bar groups
+                yaxis=dict(
+                    tickformat='$,.2f',
+                    title='Amount ($)'
+                )
             )
-            
-            # Only show one chart with click events enabled
-            selected_point = plotly_events(fig_category, override_height=600)
-            
-            # Show transactions if a category is clicked
-            if selected_point:
-                selected_category = selected_point[0]['x']
+            st.plotly_chart(fig_category, use_container_width=True)
+
+            # Create a selectbox for category selection instead of click events
+            st.markdown("#### Select a category to view detailed transactions:")
+            selected_category = st.selectbox(
+                "Choose a category:",
+                melted_category['Category'].unique(),
+                index=None,
+                placeholder="Choose a category..."
+            )
+
+            # Handle selection
+            if selected_category:
+                selected_point = [{'x': selected_category}]  # Simulate the click event format
                 st.markdown(f"#### Transactions for {selected_category}")
                 
                 # Create tabs for each selected group
@@ -206,4 +226,8 @@ def analyze_groups(df):
         st.info("No groups found in the data. Make sure your notes contain hashtags.")
 
 # Main execution
+# Set up the logging.
+app_logger = getLogger()
+app_logger.addHandler(logging.StreamHandler())
+app_logger.setLevel(logging.INFO)
 analyze_groups(df) 
