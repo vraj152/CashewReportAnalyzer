@@ -3,9 +3,6 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 from streamlit_plotly_events import plotly_events
-import logging
-from logging import getLogger
-import sys
 
 # Set page config
 st.set_page_config(
@@ -226,8 +223,4 @@ def analyze_groups(df):
         st.info("No groups found in the data. Make sure your notes contain hashtags.")
 
 # Main execution
-# Set up the logging.
-app_logger = getLogger()
-app_logger.addHandler(logging.StreamHandler())
-app_logger.setLevel(logging.INFO)
 analyze_groups(df) 
